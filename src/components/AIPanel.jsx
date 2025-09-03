@@ -82,7 +82,7 @@ Format the response as a clean, readable list.`
       setRecommendations(cleanedText)
     } catch (err) {
       setError('Failed to generate recommendations. Please try again.')
-      console.error('Gemini API error:', err)
+      console.error('Gemini API error :', err)
     } finally {
       setLoading(false)
     }
