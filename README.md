@@ -6,6 +6,7 @@ A modern, responsive React application for discovering and exploring books using
 
 - 🔍 **Smart Search**: Search for books by title, author, or subject
 - 📖 **Detailed Book Information**: View comprehensive book details including cover images, authors, publication dates, and descriptions
+- 🤖 **AI-Powered Insights**: Get intelligent book recommendations and AI-generated summaries using Google Gemini
 - 🎨 **Modern UI**: Clean, responsive design with smooth animations and hover effects
 - ⚡ **Fast Loading**: Optimized with Vite for lightning-fast development and builds
 - 🔄 **Loading States**: Elegant loading spinners for better user experience
@@ -109,6 +110,28 @@ book-finder/
 - Consistent styling across the application
 - Used for both search operations and image loading
 
+## 🤖 AI Features
+
+The application includes AI-powered features using Google Gemini:
+
+### Book Recommendations
+- Get personalized book recommendations based on the current book's genre, author, and themes
+- AI analyzes book characteristics to suggest similar titles
+- Includes reasoning for each recommendation
+
+### AI Book Summaries
+- Generate comprehensive book summaries using AI
+- Includes plot overview, key characters, themes, and target audience
+- Based on available book metadata and descriptions
+
+### Setup AI Features
+1. Get a Google Gemini API key from [Google AI Studio](https://makersuite.google.com/app/apikey)
+2. Add your API key to the `.env` file:
+   ```
+   VITE_GEMINI_API_KEY=your_api_key_here
+   ```
+3. Restart the development server
+
 ## 🔧 Configuration
 
 ### Tailwind CSS
@@ -116,6 +139,12 @@ The project uses Tailwind CSS for styling. Configuration can be found in `tailwi
 
 ### Vite Configuration
 Build and development settings are configured in `vite.config.js`.
+
+### Environment Variables
+Create a `.env` file in the root directory for API keys:
+```
+VITE_GEMINI_API_KEY=your_gemini_api_key_here
+```
 
 ## 🌐 API Integration
 

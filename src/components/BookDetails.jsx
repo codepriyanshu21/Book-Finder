@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import LoadingSpinner from './LoadingSpinner'
 
-const BookDetails = ({ book, onClose, loading, error }) => {
+const BookDetails = ({ book, onClose, loading, error, onOpenAIPanel }) => {
   const [imageLoading, setImageLoading] = useState(true)
   const [imageError, setImageError] = useState(false)
 
@@ -126,8 +126,29 @@ const BookDetails = ({ book, onClose, loading, error }) => {
                   </p>
                 </div>
               )}
+
+              {/* AI Insights Button */}
+              <div className="mt-6 pt-4 border-t border-gray-200">
+                <button
+                  onClick={onOpenAIPanel}
+                  className="w-full px-4 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all duration-200 flex items-center justify-center gap-2 font-medium"
+                >
+                  🤖 Get AI Insights
+                  <span className="text-sm opacity-90">Recommendations & Summary</span>
+                </button>
+              </div>
             </div>
           )}
+
+          {/* Action Buttons */}
+          <div className="flex justify-end mt-6 pt-4 border-t border-gray-200">
+            <button
+              onClick={onClose}
+              className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300"
+            >
+              Close
+            </button>
+          </div>
         </div>
       </div>
     </div>

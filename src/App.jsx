@@ -1,76 +1,61 @@
-import  { useState } from 'react'
-import SearchBar from './components/SearchBar'
+import React, { useState } from 'react'
 import BookList from './components/BookList'
+import BookDetails from './components/BookDetails'
 import ErrorMessage from './components/ErrorMessage'
 import LoadingSpinner from './components/LoadingSpinner'
 import NoResultsMessage from './components/NoResultsMessage'
-import BookDetails from './components/BookDetails'
+import SearchBar from './components/SearchBar'
+import AIPanel from './components/AIPanel'
 
 const App = () => {
   const [query, setQuery] = useState('')
   const [results, setResults] = useState([])
+  const [selectedBook, setSelectedBook] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [showAIPanel, setShowAIPanel] = useState(false)
 
-  const [selectedBook, setSelectedBook] = useState(null)
-  const [detailsLoading, setDetailsLoading] = useState(false)
-  const [detailsError, setDetailsError] = useState('')
-
-  const searchBooks = async () => {
+  const handleSearch = async () => {
     if (!query.trim()) return
-
     setLoading(true)
     setError('')
     setResults([])
-
     try {
-      const response = await fetch(`https://openlibrary.org/search.json?title=${encodeURIComponent(query)}`)
+      const response = await fetch(`https://openlibrary.org/search.json?q=${encodeURIComponent(query)}`)
       if (!response.ok) {
-        throw new Error('Failed to fetch books')
+        throw new Error('Failed to fetch search results')
       }
       const data = await response.json()
-      setResults(data.docs || [])
+      // Filter to only include books with cover images
+      const filteredResults = (data.docs || []).filter(book => book.cover_i)
+      setResults(filteredResults)
     } catch (err) {
-      setError(err.message || 'An error occurred while searching')
+      setError(err.message || 'An error occurred')
     } finally {
       setLoading(false)
     }
   }
 
-  const fetchBookDetails = async (book) => {
-    setSelectedBook(null)
-    setDetailsLoading(true)
-    setDetailsError('')
-
-    try {
-      // Fetch more details using the book key
-      const response = await fetch(`https://openlibrary.org${book.key}.json`)
-      if (!response.ok) {
-        throw new Error('Failed to fetch book details')
-      }
-      const data = await response.json()
-      // Merge the original book data with the detailed data
-      setSelectedBook({ ...book, ...data })
-    } catch (err) {
-      setDetailsError(err.message || 'An error occurred while fetching book details')
-    } finally {
-      setDetailsLoading(false)
-    }
-  }
-
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
-      searchBooks()
-    }
-  }
-
   const handleBookClick = (book) => {
-    fetchBookDetails(book)
+    setSelectedBook(book)
   }
 
-  const closeDetails = () => {
+  const handleKeyPress = (event) => {
+    if (event.key === 'Enter') {
+      handleSearch()
+    }
+  }
+
+  const handleCloseDetails = () => {
     setSelectedBook(null)
-    setDetailsError('')
+  }
+
+  const handleOpenAIPanel = () => {
+    setShowAIPanel(true)
+  }
+
+  const handleCloseAIPanel = () => {
+    setShowAIPanel(false)
   }
 
   return (
@@ -80,29 +65,31 @@ const App = () => {
           <h1 className="text-4xl font-bold text-gray-800 mb-2">📚 Book Finder</h1>
           <p className="text-gray-600">Discover your next great read</p>
         </header>
-
         <SearchBar
           query={query}
           setQuery={setQuery}
-          onSearch={searchBooks}
+          onSearch={handleSearch}
           loading={loading}
           onKeyPress={handleKeyPress}
         />
-
         {error && <ErrorMessage error={error} />}
-
+        {!loading && results.length === 0 && query && <NoResultsMessage query={query} />}
         {loading && <LoadingSpinner />}
-
-        <BookList results={results} onBookClick={handleBookClick} />
-
-        {results.length === 0 && !loading && !error && query && <NoResultsMessage query={query} />}
-
-        <BookDetails
-          book={selectedBook}
-          onClose={closeDetails}
-          loading={detailsLoading}
-          error={detailsError}
-        />
+        {!loading && results.length > 0 && (
+          <BookList results={results} onBookClick={handleBookClick} />
+        )}
+        {selectedBook && (
+          <BookDetails
+            book={selectedBook}
+            onClose={handleCloseDetails}
+            loading={loading}
+            error={error}
+            onOpenAIPanel={handleOpenAIPanel}
+          />
+        )}
+        {showAIPanel && selectedBook && (
+          <AIPanel book={selectedBook} onClose={handleCloseAIPanel} />
+        )}
       </div>
     </div>
   )
